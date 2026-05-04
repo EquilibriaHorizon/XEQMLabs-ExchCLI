@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package Linux x86_64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage release tree
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          STAGE="xeqm-cli-${VERSION}-linux-x86_64"
+          mkdir -p "dist/${STAGE}"
+          cp bin/linux-x86_64/xeqm-d      "dist/${STAGE}/"
+          cp bin/linux-x86_64/xeqm-rpc    "dist/${STAGE}/"
+          cp bin/linux-x86_64/xeqm-wallet "dist/${STAGE}/"
+          cp bin/linux-x86_64/SHA256SUMS  "dist/${STAGE}/"
+          cp LICENSE README.md            "dist/${STAGE}/"
+          cp -r docs                      "dist/${STAGE}/"
+          cp -r examples                  "dist/${STAGE}/"
+          chmod +x "dist/${STAGE}"/xeqm-*
+
+      - name: Create tarball and checksums
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          STAGE="xeqm-cli-${VERSION}-linux-x86_64"
+          cd dist
+          tar -czf "${STAGE}.tar.gz" "${STAGE}"
+          sha256sum "${STAGE}.tar.gz" > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/SHA256SUMS
+          generate_release_notes: true
+          body: |
+            ## XEQMLabs CLI ${{ github.ref_name }}
+
+            Prebuilt Linux x86_64 binaries for the XEQM network.
+
+            **Contents:** `xeqm-d`, `xeqm-rpc`, `xeqm-wallet`, docs, systemd examples.
+
+            ### Verify
+
+            ```
+            sha256sum -c SHA256SUMS
+            ```
+
+            ### Install
+
+            ```
+            tar -xzf xeqm-cli-${{ github.ref_name }}-linux-x86_64.tar.gz
+            cd xeqm-cli-${{ github.ref_name }}-linux-x86_64
+            chmod +x xeqm-*
+            sudo install -m 755 xeqm-d xeqm-rpc xeqm-wallet /usr/local/bin/
+            ```
+
+            See [docs/exchange-integration.md](https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/blob/main/docs/exchange-integration.md) for exchange setup.

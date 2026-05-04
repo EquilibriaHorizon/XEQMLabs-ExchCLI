@@ -1,0 +1,33 @@
+[Unit]
+Description=XEQM wallet RPC server
+After=network-online.target xeqm-daemon.service
+Wants=network-online.target
+Requires=xeqm-daemon.service
+
+[Service]
+Type=simple
+User=xeqm
+Group=xeqm
+ExecStart=/usr/local/bin/xeqm-rpc \
+    --wallet-file /srv/xeqm/hot-wallet \
+    --password-file /srv/xeqm/.wallet-password \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9234 \
+    --rpc-login exchange:REPLACE_ME \
+    --daemon-address 127.0.0.1:9231 \
+    --log-file /var/log/xeqm/wallet-rpc.log \
+    --log-level 1 \
+    --non-interactive
+Restart=always
+RestartSec=10
+LimitNOFILE=65536
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/srv/xeqm /var/log/xeqm
+
+[Install]
+WantedBy=multi-user.target

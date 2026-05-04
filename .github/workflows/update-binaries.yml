@@ -1,0 +1,51 @@
+name: Update binaries from upstream image
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_ref:
+        description: 'Docker image ref (default: ghcr.io/equilibriahorizon/equilibria-node:latest)'
+        required: false
+        default: 'ghcr.io/equilibriahorizon/equilibria-node:latest'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull upstream image
+        run: docker pull "${{ inputs.image_ref }}"
+
+      - name: Extract binaries
+        run: |
+          CID=$(docker create "${{ inputs.image_ref }}")
+          mkdir -p bin/linux-x86_64
+          docker cp "$CID":/usr/local/bin/xeqm-d      bin/linux-x86_64/xeqm-d
+          docker cp "$CID":/usr/local/bin/xeqm-rpc    bin/linux-x86_64/xeqm-rpc
+          docker cp "$CID":/usr/local/bin/xeqm-wallet bin/linux-x86_64/xeqm-wallet
+          docker rm "$CID"
+          chmod +x bin/linux-x86_64/xeqm-*
+
+      - name: Regenerate checksums
+        run: |
+          cd bin/linux-x86_64
+          sha256sum xeqm-d xeqm-rpc xeqm-wallet > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: refresh binaries from ${{ inputs.image_ref }}"
+          title: "Refresh binaries from upstream image"
+          body: |
+            Automated refresh of `bin/linux-x86_64/` from `${{ inputs.image_ref }}`.
+
+            Review the new SHA256SUMS before merging.
+          branch: bot/refresh-binaries
+          delete-branch: true

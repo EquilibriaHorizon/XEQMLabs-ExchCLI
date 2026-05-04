@@ -1,0 +1,24 @@
+[Unit]
+Description=XEQM node daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xeqm
+Group=xeqm
+ExecStart=/usr/local/bin/xeqm-d \
+    --config-file /etc/xeqm/xeqm-d.conf
+Restart=always
+RestartSec=10
+LimitNOFILE=65536
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/xeqm /var/log/xeqm
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,51 @@
+# Core reference clone (not distributed)
+core/
+
+# Build artifacts
+build/
+dist/
+*.o
+*.a
+*.log
+logs/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Wallet / data (safety: must never commit)
+*.wallet
+*.wallet.keys
+*.wallet.address.txt
+*.keys
+*.address.txt
+*.bls_key
+key
+key_ed25519
+key_x25519
+wallet_rpc_data/
+blockchain/
+lmdb/
+.bitxeqm/
+.xeqm/
+
+# Local env / secrets
+.env
+.env.local
+.env.*
+*.secret
+config.local.json
+
+# Internal notes (kept out of public repo)
+CLAUDE.md
+notes.md
+NOTES.md
+*.notes.md
