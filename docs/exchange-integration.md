@@ -42,8 +42,8 @@ cd XEQMLabs-ExchCLI/bin/linux-x86_64
 chmod +x xeqm-d xeqm-rpc xeqm-wallet
 sha256sum -c SHA256SUMS
 
-# 2. Start the daemon (foreground, mainnet, RPC bound to loopback)
-./xeqm-d --rpc-bind-ip 127.0.0.1 --rpc-bind-port 9231 --non-interactive
+# 2. Start the daemon (foreground, mainnet, admin RPC bound to loopback)
+./xeqm-d --rpc-admin 127.0.0.1:9231 --non-interactive
 
 # 3. In a second shell, create the hot wallet
 ./xeqm-wallet --generate-new-wallet /srv/xeqm/hot-wallet --daemon-address 127.0.0.1:9231
@@ -82,9 +82,7 @@ For systemd units suitable for production, see [`examples/systemd/`](../examples
     --data-dir /var/lib/xeqm \
     --log-file /var/log/xeqm/daemon.log \
     --log-level 1 \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9231 \
-    --confirm-external-bind \
+    --rpc-admin 127.0.0.1:9231 \
     --non-interactive
 ```
 
@@ -292,7 +290,7 @@ Wait until the daemon includes `tx_hash` in a block (poll `get_transactions` or 
 XEQM ships with `--stagenet` and `--testnet` modes. To smoke-test integration without spending real coins:
 
 ```bash
-xeqm-d --stagenet --rpc-bind-port 11023 ...
+xeqm-d --stagenet --rpc-admin 127.0.0.1:11023 ...
 xeqm-rpc --stagenet --rpc-bind-port 11024 --daemon-address 127.0.0.1:11023 ...
 ```
 

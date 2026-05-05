@@ -33,7 +33,7 @@ chmod +x xeqm-d xeqm-rpc xeqm-wallet
 sha256sum -c SHA256SUMS
 
 # Run the daemon (admin RPC bound to loopback)
-./xeqm-d --rpc-bind-ip 127.0.0.1 --rpc-bind-port 9231 --non-interactive
+./xeqm-d --rpc-admin 127.0.0.1:9231 --non-interactive
 
 # In another shell, create a wallet
 ./xeqm-wallet --generate-new-wallet ~/xeqm-wallets/main --daemon-address 127.0.0.1:9231

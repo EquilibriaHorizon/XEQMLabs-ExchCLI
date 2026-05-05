@@ -19,7 +19,9 @@ jobs:
       - name: Stage release tree
         run: |
           VERSION="${GITHUB_REF_NAME}"
-          STAGE="xeqm-cli-${VERSION}-linux-x86_64"
+          # Stable, version-less directory name so docs that reference
+          # `xeqm-cli-linux-x86_64.tar.gz` always resolve via /releases/latest/download/.
+          STAGE="xeqm-cli-linux-x86_64"
           mkdir -p "dist/${STAGE}"
           cp bin/linux-x86_64/xeqm-d      "dist/${STAGE}/"
           cp bin/linux-x86_64/xeqm-rpc    "dist/${STAGE}/"
@@ -28,15 +30,20 @@ jobs:
           cp LICENSE README.md            "dist/${STAGE}/"
           cp -r docs                      "dist/${STAGE}/"
           cp -r examples                  "dist/${STAGE}/"
+          # Embed the version inside so an extracted tree records what was built.
+          echo "${VERSION}" > "dist/${STAGE}/VERSION"
           chmod +x "dist/${STAGE}"/xeqm-*
 
-      - name: Create tarball and checksums
+      - name: Create tarballs and checksums
         run: |
           VERSION="${GITHUB_REF_NAME}"
-          STAGE="xeqm-cli-${VERSION}-linux-x86_64"
+          STAGE="xeqm-cli-linux-x86_64"
           cd dist
+          # Versionless asset (stable URL via /releases/latest/download/).
           tar -czf "${STAGE}.tar.gz" "${STAGE}"
-          sha256sum "${STAGE}.tar.gz" > SHA256SUMS
+          # Versioned asset (so older releases are unambiguously identifiable).
+          cp "${STAGE}.tar.gz" "xeqm-cli-${VERSION}-linux-x86_64.tar.gz"
+          sha256sum "${STAGE}.tar.gz" "xeqm-cli-${VERSION}-linux-x86_64.tar.gz" > SHA256SUMS
           cat SHA256SUMS
 
       - name: Publish GitHub Release
@@ -53,6 +60,21 @@ jobs:
 
             **Contents:** `xeqm-d`, `xeqm-rpc`, `xeqm-wallet`, docs, systemd examples.
 
+            ### Download
+
+            Stable URL (always points at the latest release):
+
+            ```
+            curl -LO https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/releases/latest/download/xeqm-cli-linux-x86_64.tar.gz
+            curl -LO https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/releases/latest/download/SHA256SUMS
+            ```
+
+            Or this exact release:
+
+            ```
+            curl -LO https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/releases/download/${{ github.ref_name }}/xeqm-cli-${{ github.ref_name }}-linux-x86_64.tar.gz
+            ```
+
             ### Verify
 
             ```
@@ -62,8 +84,8 @@ jobs:
             ### Install
 
             ```
-            tar -xzf xeqm-cli-${{ github.ref_name }}-linux-x86_64.tar.gz
-            cd xeqm-cli-${{ github.ref_name }}-linux-x86_64
+            tar -xzf xeqm-cli-linux-x86_64.tar.gz
+            cd xeqm-cli-linux-x86_64
             chmod +x xeqm-*
             sudo install -m 755 xeqm-d xeqm-rpc xeqm-wallet /usr/local/bin/
             ```

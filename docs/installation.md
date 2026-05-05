@@ -24,7 +24,7 @@ curl -LO https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/releases/latest/d
 curl -LO https://github.com/EquilibriaHorizon/XEQMLabs-ExchCLI/releases/latest/download/SHA256SUMS
 sha256sum -c SHA256SUMS
 tar -xzf xeqm-cli-linux-x86_64.tar.gz
-cd xeqm-cli-*-linux-x86_64
+cd xeqm-cli-linux-x86_64
 ```
 
 ## 2. Verify checksums
@@ -56,10 +56,10 @@ sudo install -m 755 xeqm-d xeqm-rpc xeqm-wallet /usr/local/bin/
 
 The daemon stores the chain under `~/.xeqm/` by default. Initial sync from genesis takes a few hours over reasonable bandwidth and SSD.
 
-To run detached:
+To run detached with admin RPC bound to loopback:
 
 ```bash
-./xeqm-d --detach --log-file ~/.xeqm/xeqm-d.log
+./xeqm-d --detach --rpc-admin 127.0.0.1:9231 --log-file ~/.xeqm/xeqm-d.log
 ```
 
 Stop it cleanly:

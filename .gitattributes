@@ -7,7 +7,8 @@
 *.yaml         text eol=lf
 SHA256SUMS     text eol=lf
 
-bin/linux-x86_64/xeq-d          binary
-bin/linux-x86_64/xeq-wallet-rpc binary
-bin/linux-x86_64/xeq-wallet-cli binary
-assets/XEQMLabs.svg             binary
+bin/linux-x86_64/xeqm-d      binary
+bin/linux-x86_64/xeqm-rpc    binary
+bin/linux-x86_64/xeqm-wallet binary
+assets/XEQMLabs.svg          binary
+assets/XEQMlogo500x500.svg   binary
